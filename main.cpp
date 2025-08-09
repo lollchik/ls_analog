@@ -48,10 +48,10 @@ public:
             perror("ERR: cant open folder");
         }
     };
-    void list_directory_large_info() const override {};
-    void list_directory_large_revers_info() override {};
-    void list_directory_large_humaniod_info() override {};
-    void list_directory_large_revers_humaniod_info() override {};
+    void list_directory_large_info() const override {cout<<"list_directory_large_info"<<endl;};
+    void list_directory_large_revers_info() override {cout<<"list_directory_large_revers_info"<<endl;};
+    void list_directory_large_humaniod_info() override {cout<<"list_directory_large_humaniod_info"<<endl;};
+    void list_directory_large_revers_humaniod_info() override {cout<<"list_directory_large_revers_humaniod_info"<<endl;};
 };
 
 /*
@@ -63,37 +63,47 @@ public:
 int main(int argc, char *argv[]) {
     
     //	opterr = 0;
+    char* path;
     int rez = 0;
     int result_storage = 0;
     int flag = 0;
     bool is_comand_with_flag = false;
-	while ( (rez = getopt(argc, argv, "lrhH")) != -1){
-        cout<<"RES"<<rez<<endl;
+	while ( (rez = getopt(argc, argv, "lrhH")) ){
+        if(rez == -1){
+            path = argv[optind];
+            cout<<path<<endl;
+        }
         is_comand_with_flag = true;
         switch (rez) {
-            case 'l':   result_storage = rez; printf("<-------Using l key large output---------->\n"); 
-                        UnixDirectoryUtil(".").list_directory_large_info();            
-                        break;
-
+            case 'l':   result_storage = rez; printf("<-------Using l key large output---------->\n");
+            if(rez == -1)
+                UnixDirectoryUtil(path).list_directory_large_info();            
+            // cout<<path<<endl;}
+            break;
+            
             case 'r':   printf("<-------Using r key revers output--------->\n");
-                        if(!result_storage & !flag)
-                            UnixDirectoryUtil(".").list_directory_large_revers_humaniod_info();
-                        else if(!result_storage)
-                            UnixDirectoryUtil(".").list_directory_large_revers_info();    
-                        break;
-
+            if(!result_storage & !flag & rez == -1)
+            UnixDirectoryUtil(path).list_directory_large_revers_humaniod_info();
+            else if(!result_storage & rez == -1)
+            UnixDirectoryUtil(path).list_directory_large_revers_info();    
+            break;
+            
             case 'h':   printf("<-------Using h key humanoid output)------>\n");
-                        if(!result_storage & !flag)
-                            UnixDirectoryUtil(".").list_directory_large_revers_humaniod_info();
-                        else if(!result_storage)
-                            UnixDirectoryUtil(".").list_directory_large_revers_humaniod_info();
-                        break;
+            if(!result_storage & !flag & rez == -1)
+            UnixDirectoryUtil(path).list_directory_large_revers_humaniod_info();
+            else if(!result_storage & rez == -1)
+            UnixDirectoryUtil(path).list_directory_large_revers_humaniod_info();
+            break;
             
             case 'H':   printf("HI, there is ls alternative usege helper! =)\n  -l : \"some info about l\"\n  -r : \"some info about r\"\n  -h : \"some info about h\"\n  -H : \"some info about H\"\n"); break;
             case '?':   printf("UNKNOWN OPTION USE -H for help printing !\n"); break;
 		}
+        if(rez == -1){
+            break;
+        }
 	}
-    if(!is_comand_with_flag)
-        UnixDirectoryUtil(".").list_directory_info();
-    return 0;
+    if(!is_comand_with_flag){
+        UnixDirectoryUtil(path).list_directory_info();
+    }
+        return 0;
 }
