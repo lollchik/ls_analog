@@ -1,58 +1,6 @@
-#include <iostream>
-#include <dirent.h>
-#include <string>
-#include <sys/types.h>
-#include <stdio.h>
-#include <unistd.h>
+#include "directory_util.h"
 
 using namespace std;
-
-/*
- @author Zhurckov G.S.
- @brief
-    Виртуальный класс для возможности реализации функционала по другому (переход на новый стандарт, повлекший оптимизации).
-*/
-class DirectoryUtil{
-    public:
-        DirectoryUtil(const string& input_folder_path): folder_path(input_folder_path){}
-        virtual ~DirectoryUtil()= default;
-    protected:
-        /*some folder info*/
-        std::string folder_path;
-        virtual void list_directory_info() const = 0;
-        virtual void list_directory_large_info() const = 0;
-        virtual void list_directory_large_revers_info()  = 0;
-        virtual void list_directory_large_humaniod_info() = 0;
-        virtual void list_directory_large_revers_humaniod_info() = 0;
-};
-
-/*
- @author Zhurckov G.S.
- @brief
-    Класс реализации функционала утилиты лс (реализация на основе уловий поставленной задачи).
-*/
-class UnixDirectoryUtil : protected DirectoryUtil
-{
-public:
-    UnixDirectoryUtil(const string& path):DirectoryUtil(path){};
-    void list_directory_info() const override {
-        DIR *dir;
-        struct dirent *ent;
-        if ((dir = opendir(this->folder_path.c_str())) != nullptr) {
-            cout << "FOLDER FILL: " << this->folder_path << endl;
-            while ((ent = readdir(dir)) != nullptr) {
-                cout << ent->d_name << endl;
-            }
-            closedir(dir);
-        } else {
-            perror("ERR: cant open folder");
-        }
-    };
-    void list_directory_large_info() const override {cout<<"list_directory_large_info"<<endl;};
-    void list_directory_large_revers_info() override {cout<<"list_directory_large_revers_info"<<endl;};
-    void list_directory_large_humaniod_info() override {cout<<"list_directory_large_humaniod_info"<<endl;};
-    void list_directory_large_revers_humaniod_info() override {cout<<"list_directory_large_revers_humaniod_info"<<endl;};
-};
 
 /*
  @author Zhurckov G.S.
@@ -60,50 +8,50 @@ public:
     Функция посследовательно перебирает аргументы переданные на вход,
     в зависимости от полученных аргументов запускаются необходимые сценари.
 */
-int main(int argc, char *argv[]) {
-    
-    //	opterr = 0;
-    char* path;
+int main(int argc, char *argv[])
+{
+    char *path;
     int rez = 0;
-    int result_storage = 0;
-    int flag = 0;
-    bool is_comand_with_flag = false;
-	while ( (rez = getopt(argc, argv, "lrhH")) ){
-        if(rez == -1){
+    bool is_l = false, is_r = false, is_h = false;
+    while ((rez = getopt(argc, argv, "lrhH")))
+    {
+        if (rez == -1)
+        {
             path = argv[optind];
-            cout<<path<<endl;
-        }
-        is_comand_with_flag = true;
-        switch (rez) {
-            case 'l':   result_storage = rez; printf("<-------Using l key large output---------->\n");
-            if(rez == -1)
-                UnixDirectoryUtil(path).list_directory_large_info();            
-            // cout<<path<<endl;}
-            break;
-            
-            case 'r':   printf("<-------Using r key revers output--------->\n");
-            if(!result_storage & !flag & rez == -1)
-            UnixDirectoryUtil(path).list_directory_large_revers_humaniod_info();
-            else if(!result_storage & rez == -1)
-            UnixDirectoryUtil(path).list_directory_large_revers_info();    
-            break;
-            
-            case 'h':   printf("<-------Using h key humanoid output)------>\n");
-            if(!result_storage & !flag & rez == -1)
-            UnixDirectoryUtil(path).list_directory_large_revers_humaniod_info();
-            else if(!result_storage & rez == -1)
-            UnixDirectoryUtil(path).list_directory_large_revers_humaniod_info();
-            break;
-            
-            case 'H':   printf("HI, there is ls alternative usege helper! =)\n  -l : \"some info about l\"\n  -r : \"some info about r\"\n  -h : \"some info about h\"\n  -H : \"some info about H\"\n"); break;
-            case '?':   printf("UNKNOWN OPTION USE -H for help printing !\n"); break;
-		}
-        if(rez == -1){
+            cout << path << endl;
+            if (is_l & (!is_r & !is_h))
+                UnixDirectoryUtil(path).list_directory_large_info();
+            else if (is_l & is_r & !is_h)
+                UnixDirectoryUtil(path).list_directory_large_revers_info();
+            else if (is_l & is_h & !is_r)
+                UnixDirectoryUtil(path).list_directory_large_humaniod_info();
+            else if (is_l & is_r & is_h)
+                UnixDirectoryUtil(path).list_directory_large_revers_humaniod_info();
+            else
+                UnixDirectoryUtil(path).list_directory_info();
             break;
         }
-	}
-    if(!is_comand_with_flag){
-        UnixDirectoryUtil(path).list_directory_info();
+        switch (rez)
+        {
+        case 'l':
+            is_l = true;
+            printf("<-------Using l key large output---------->\n");
+            break;
+        case 'r':
+            is_r = true;
+            printf("<-------Using r key revers output--------->\n");
+            break;
+        case 'h':
+            is_h = true;
+            printf("<-------Using h key humanoid output)------>\n");
+            break;
+        case 'H':
+            printf("HI, there is ls alternative usege helper! =)\n  -l : \"some info about l\"\n  -r : \"some info about r\"\n  -h : \"some info about h\"\n  -H : \"some info about H\"\n");
+            break;
+        case '?':
+            printf("UNKNOWN OPTION USE -H for help printing !\n");
+            break;
+        }
     }
-        return 0;
+    return 0;
 }
