@@ -9,12 +9,15 @@ using namespace std;
 */
 class UnixDirectoryUtil
 {
+    DIR *dir;
+    struct dirent *ent;
+    vector<string> entries;
     string folder_path;
 
 public:
     UnixDirectoryUtil(const string &path) : folder_path(path) {};
-    void list_directory_info() const;
-    void list_directory_large_info() const;
+    void list_directory_info();
+    void list_directory_large_info();
     void list_directory_large_revers_info();
     void list_directory_large_humaniod_info();
     void list_directory_large_revers_humaniod_info();

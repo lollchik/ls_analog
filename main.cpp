@@ -17,8 +17,10 @@ int main(int argc, char *argv[])
     {
         if (rez == -1)
         {
-            path = argv[optind];
-            cout << path << endl;
+            if (argv[optind] == NULL)
+                path = (char *)".";
+            else
+                path = argv[optind];
             if (is_l & (!is_r & !is_h))
                 UnixDirectoryUtil(path).list_directory_large_info();
             else if (is_l & is_r & !is_h)
@@ -35,15 +37,12 @@ int main(int argc, char *argv[])
         {
         case 'l':
             is_l = true;
-            printf("<-------Using l key large output---------->\n");
             break;
         case 'r':
             is_r = true;
-            printf("<-------Using r key revers output--------->\n");
             break;
         case 'h':
             is_h = true;
-            printf("<-------Using h key humanoid output)------>\n");
             break;
         case 'H':
             printf("HI, there is ls alternative usege helper! =)\n  -l : \"some info about l\"\n  -r : \"some info about r\"\n  -h : \"some info about h\"\n  -H : \"some info about H\"\n");
