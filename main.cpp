@@ -45,11 +45,11 @@ int main(int argc, char *argv[])
             is_h = true;
             break;
         case 'H':
-            printf("HI, there is ls alternative usege helper! =)\n  -l : \"some info about l\"\n  -r : \"some info about r\"\n  -h : \"some info about h\"\n  -H : \"some info about H\"\n");
-            break;
+            printf("HI, there is ls alternative usege helper! =)\n  -l : large l\n  -r : revers r\n  -h : readbl h\n  -H : util info\n");
+            return 0;
         case '?':
             printf("UNKNOWN OPTION USE -H for help printing !\n");
-            break;
+            return 0;
         }
     }
     return 0;
